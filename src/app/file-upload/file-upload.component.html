@@ -1,0 +1,5 @@
+<div>
+    <input type="file" (change)="handleFileInput($event)" />
+    <p *ngIf="progress >= 0">Uploading: {{ progress }}%</p>
+  </div>
+  
