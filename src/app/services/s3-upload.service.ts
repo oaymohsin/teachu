@@ -114,6 +114,7 @@ export class S3UploadService {
         filename: file.name,
         fileType: file.type,
         partCount: totalParts,
+        folder: file.type.startsWith('video') ? 'VideoLectures' : 'OtherContentFiles',
       });
 
       const { uploadId, key, presignedUrls } = initRes.data.body;
