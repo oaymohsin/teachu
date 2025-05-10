@@ -106,6 +106,8 @@ export class S3UploadService {
 
   async uploadFile(file: File, onProgress: (percent: number) => void): Promise<any> {
     try {
+
+      const durationInSeconds = await this.getVideoDuration(file); 
       const partSize = 10 * 1024 * 1024; // 10MB
       const totalParts = Math.ceil(file.size / partSize);
 
@@ -174,6 +176,7 @@ export class S3UploadService {
         fieldname: 'video', // optional: can be customized or passed in
         originalName: file.name,
         mimetype: file.type,
+        durationInSeconds,
         size: file.size,
       });
 
@@ -183,4 +186,18 @@ export class S3UploadService {
       throw err;
     }
   }
+
+  getVideoDuration(file: File): Promise<number> {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+      video.onloadedmetadata = () => {
+        window.URL.revokeObjectURL(video.src);
+        resolve(video.duration);
+      };
+      video.onerror = () => reject(new Error('Failed to load video metadata'));
+      video.src = URL.createObjectURL(file);
+    });
+  }
+  
 }
